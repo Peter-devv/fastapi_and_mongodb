@@ -1,7 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from bson.objectid import ObjectId
 from fastapi import HTTPException, status, Depends
-from .auth import get_current_user
+from auth import get_current_user
 
 from database import (
     books_collection,
