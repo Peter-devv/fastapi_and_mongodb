@@ -1,6 +1,7 @@
 from fastapi.encoders import jsonable_encoder
 from bson.objectid import ObjectId
-from fastapi import HTTPException, status
+from fastapi import HTTPException, status, Depends
+from .auth import get_current_user
 
 from database import (
     books_collection,
@@ -12,7 +13,7 @@ import serializer
 class CRUDService:
 
     @staticmethod
-    def create_book(book_data: schema.BookCreate):
+    def create_book(book_data: schema.BookCreate, current_user = Depends(get_current_user)):
         book_data = jsonable_encoder(book_data)
         book_document_data = books_collection.insert_one(
             book_data
@@ -24,19 +25,19 @@ class CRUDService:
         return serializer.book_serializer(book_document)
     
     @staticmethod
-    def get_all_books(skip: int = 0, limit: int = 10):
+    def get_all_books(skip: int = 0, limit: int = 10, current_user = Depends(get_current_user)):
         books = books_collection.find().skip(skip).limit(limit)
         return [serializer.book_serializer(book) for book in books]
     
     @staticmethod
-    def get_book_by_id(book_id: str):
+    def get_book_by_id(book_id: str, current_user = Depends(get_current_user)):
         book = books_collection.find_one({"_id": ObjectId(book_id)})
         if book:
             return serializer.book_serializer(book)
         return None
 
     @staticmethod
-    def update_book(book_id: str, book_update_in: schema.BookUpdate):
+    def update_book(book_id: str, book_update_in: schema.BookUpdate, current_user = Depends(get_current_user)):
         book = books_collection.find_one(
             {"_id": ObjectId(book_id)}
         )
@@ -49,7 +50,7 @@ class CRUDService:
         return serializer.book_serializer(book_updated)
     
     @staticmethod
-    def delete_book(book_id: str):
+    def delete_book(book_id: str, current_user = Depends(get_current_user)):
         return books_collection.find_one_and_delete({"_id": ObjectId(book_id)})
     
 
