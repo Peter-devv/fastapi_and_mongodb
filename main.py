@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from crud import crud_service, user_crud_service
-import schema
+from . import schema
 from auth import pwd_context, authenticate_user, create_access_token, get_current_user
 
 app = FastAPI()
